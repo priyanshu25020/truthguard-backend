@@ -1,5 +1,6 @@
-
 const { analyzeWithGroq } = require("../services/groqService");
+// 🔴 NAYA: Tavily service ko import kiya
+const { searchWithTavily } = require("../services/tavilyService"); 
 
 const analyzeNews = async (req, res) => {
   try {
@@ -11,8 +12,14 @@ const analyzeNews = async (req, res) => {
 
     console.log(`Starting real AI analysis for ${type}: ${content.substring(0, 50)}...`);
 
-    // ASALI AI DIMAG (Groq AI Service ko call) 🧠⚡
-    const result = await analyzeWithGroq(content);
+    // 🔴 NAYA STEP 1: Tavily se Real-time Search Context lao (OSINT Pipeline)
+    console.log("Fetching live facts from Tavily...");
+    const searchContext = await searchWithTavily(content);
+
+    // 🔴 UPDATE STEP 2: ASALI AI DIMAG (Groq AI Service ko call) 🧠⚡
+    // Ab hum 'content' ke sath Tavily ka 'searchContext' bhi Groq ko bhej rahe hain
+    console.log("Analyzing data with Groq...");
+    const result = await analyzeWithGroq(content, searchContext);
 
     if (!result.success) {
       return res.status(500).json({ success: false, message: result.message });
