@@ -14,9 +14,9 @@ const analyzeWithGroq = async (content) => {
     // 2. Groq AI ko call karna
     const completion = await groq.chat.completions.create({
       messages: [
-       {
+        {
           role: "system",
-          content: `Analyze this news claim. You must strictly output JSON matching exactly this schema:
+          content: `Analyze this news claim. You must strictly output JSON matching exactly this schema. Provide exactly 3 points in the "reasons" array and ensure the "sentiment" percentages add up to 100:
           {
             "headline": "Short claim headline",
             "verdict": "MOSTLY FALSE" or "VERIFIED TRUE",
@@ -24,6 +24,16 @@ const analyzeWithGroq = async (content) => {
             "confidence": (number 0-100),
             "summary": "Short 2 sentence summary of analysis",
             "keyInsight": "One striking fact or myth debunked",
+            "reasons": [
+              "First explicit reason why AI flagged this.",
+              "Second logical reason or evidence found.",
+              "Third analytical point regarding the source or claim."
+            ],
+            "sentiment": {
+              "negative": 10,
+              "neutral": 30,
+              "positive": 60
+            },
             "sources": [
               { "name": "GlobalFact DB", "status": "verified" or "mismatch" },
               { "name": "Snopes", "status": "verified" or "mismatch" }
@@ -37,14 +47,13 @@ const analyzeWithGroq = async (content) => {
             },
             "recommendation": "Safe to share" or "Do not share"
           }`,
-        
         },
         {
           role: "user",
           content: content,
         },
       ],
-    model: "llama-3.3-70b-versatile", // <--- YAHAN MAINE NAYA ACTIVE MODEL DAAL DIYA HAI
+      model: "llama-3.3-70b-versatile", // <--- YAHAN MAINE NAYA ACTIVE MODEL DAAL DIYA HAI
       temperature: 0.1, 
       response_format: { type: "json_object" }, 
     });
