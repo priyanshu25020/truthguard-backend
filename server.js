@@ -13,8 +13,9 @@ dotenv.config();
 const app = express();
 
 // 3. MIDDLEWARE
-app.use(express.json());
+// Yeh aapke frontend ko backend se connect hone ki permission dega
 app.use(cors());
+app.use(express.json());
 
 // 4. ROUTES
 app.use('/api/auth', authRoutes);
@@ -38,5 +39,5 @@ mongoose.connect(MONGO_URI)
 
 // 6. START SERVER
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
