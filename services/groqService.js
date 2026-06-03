@@ -18,7 +18,7 @@ const analyzeWithGroq = async (content, searchContext) => {
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama3-8b-8192", // Aap apna pasandida Groq model daal sakte hain
+      model: "llama-3.1-8b-instant", // Aap apna pasandida Groq model daal sakte hain
     });
 
     const aiResponse = chatCompletion.choices[0]?.message?.content;
