@@ -12,34 +12,44 @@ const StatsCards = () => {
     accuracy: 0 // Default 0 jab tak koi scan na ho
   });
 
-  useEffect(() => {
+useEffect(() => {
     // 🔥 Function jo data calculate karega
     const fetchRealStats = () => {
-      const history = JSON.parse(localStorage.getItem('truthGuard_history')) || [];
+      try {
+        const storedData = localStorage.getItem('truthGuard_history');
+        const history = storedData ? JSON.parse(storedData) : [];
 
-      if (history.length > 0) {
-        const total = history.length;
-        
-        // 🔥 NAYA LOGIC: 'verdict' aur 'status' dono ko safely read karega
-        const realCount = history.filter(item => {
-          const resultText = (item.verdict || item.status || "").toUpperCase();
-          return resultText.includes('REAL') || 
-                 resultText.includes('TRUE') || 
-                 (resultText.includes('VERIFIED') && !resultText.includes('UNVERIFIED'));
-        }).length;
-        
-        const fakeCount = history.filter(item => {
-          const resultText = (item.verdict || item.status || "").toUpperCase();
-          return resultText.includes('FAKE') || 
-                 resultText.includes('FALSE') || 
-                 resultText.includes('UNVERIFIED');
-        }).length;
-        
-        // Confidence calculation (kisi bhi API response format ke liye)
-        const totalConfidence = history.reduce((acc, item) => acc + (Number(item.aiConfidence || item.confidence) || 0), 0);
-        const avgAccuracy = Math.round(totalConfidence / total) || 0;
+        if (history.length > 0) {
+          const total = history.length;
+          
+          // 🔥 'verdict' aur 'status' dono ko safely read karega
+          const realCount = history.filter(item => {
+            const resultText = (item.verdict || item.status || "").toUpperCase();
+            return resultText.includes('REAL') || 
+                   resultText.includes('TRUE') || 
+                   (resultText.includes('VERIFIED') && !resultText.includes('UNVERIFIED'));
+          }).length;
+          
+          const fakeCount = history.filter(item => {
+            const resultText = (item.verdict || item.status || "").toUpperCase();
+            return resultText.includes('FAKE') || 
+                   resultText.includes('FALSE') || 
+                   resultText.includes('UNVERIFIED');
+          }).length;
+          
+          // Confidence calculation
+          const totalConfidence = history.reduce((acc, item) => acc + (Number(item.aiConfidence || item.confidence) || 0), 0);
+          const avgAccuracy = Math.round(totalConfidence / total) || 0;
 
-        setRealStats({ total, real: realCount, fake: fakeCount, accuracy: avgAccuracy });
+          setRealStats({ total, real: realCount, fake: fakeCount, accuracy: avgAccuracy });
+        } else {
+          // 🔥 JAB HISTORY KHALI HO (Zero Reset)
+          setRealStats({ total: 0, real: 0, fake: 0, accuracy: 0 });
+        }
+      } catch (error) {
+        // Agar JSON parse fail ho jaye toh app crash nahi hoga
+        console.error("Error reading history data:", error);
+        setRealStats({ total: 0, real: 0, fake: 0, accuracy: 0 });
       }
     };
 
@@ -55,7 +65,6 @@ const StatsCards = () => {
       window.removeEventListener('storage', fetchRealStats);
     };
   }, []);
-
   const stats = [
     { 
       label: "News Analyzed", 
