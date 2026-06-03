@@ -4,12 +4,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+// 🔥 SUPER IMPORTANT: Dotenv config yahan aana chahiye, routes import hone se PEHLE!
+dotenv.config();
+
 const authRoutes = require('./routes/authRoutes');
 const analyzeRoutes = require('./routes/analyzeRoutes');
 const threatRoutes = require('./routes/threatRoutes');   // 🔥 Import safe hai
 
 // 2. CONFIGURATION
-dotenv.config();
 const app = express();
 
 // 3. MIDDLEWARE
