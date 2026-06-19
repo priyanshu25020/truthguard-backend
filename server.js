@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const serverless = require("serverless-http");
 
 // 🔥 SUPER IMPORTANT: Dotenv config yahan aana chahiye, routes import hone se PEHLE!
 dotenv.config();
@@ -40,6 +41,8 @@ mongoose.connect(MONGO_URI)
   .catch((err) => console.error('❌ Database connection error:', err));
 
 // 6. START SERVER
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+
+module.exports.handler = serverless(app);
